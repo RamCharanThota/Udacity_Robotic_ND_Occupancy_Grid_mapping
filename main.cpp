@@ -27,15 +27,14 @@ void occupancyGridMapping(double Robotx, double Roboty, double Robottheta, doubl
     //1 - TODO: Generate a grid (size 300x150) and then loop through all the cells
         vector<vector<double>> grid{300,vector<double>{150}};
             //2- TODO: Compute the center of mass of each cell xi and yi 
-            for (int width_ind=0;width_ind <300;width_ind++){
-                for(int height_ind=0;height_ind<150;height_ind++){
+            for (int width_ind=0;width_ind <mapWidth/gridWidth;width_ind++){
+                for(int height_ind=0;height_ind<mapHeight/gridHeight;height_ind++){
                     double xi = width_ind * gridWidth + gridWidth / 2 - robotXOffset;
                     double yi = -(height_ind * gridHeight + gridHeight / 2) + robotYOffset;
                     //3- TODO: Check if each cell falls under the perceptual field of the measurements
                     double dist_from_robot = sqrt(pow((xi-Robotx),2)+pow((yi-Roboty),2));
                     if (dist_from_robot<=Zmax ){ // condition to grid falls under feild of view
-                         l[width_ind][width_ind]=l[width_ind][width_ind]
-                         +inverseSensorModel(Robotx,Roboty,Robottheta,xi,yi,sensorData);
+                         l[width_ind][height_ind]=l[width_ind][height_ind]+inverseSensorModel(Robotx,Roboty,Robottheta,xi,yi,sensorData);
                     }
                     else {
                         l[width_ind][width_ind]=l[width_ind][width_ind];
