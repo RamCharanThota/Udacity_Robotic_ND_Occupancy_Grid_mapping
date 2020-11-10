@@ -18,8 +18,57 @@ vector< vector<double> > l(mapWidth/gridWidth, vector<double>(mapHeight/gridHeig
 
 double inverseSensorModel(double x, double y, double theta, double xi, double yi, double sensorData[])
 {
-    // You will be coding this section in the upcoming concept! 
-    return 0.4;
+        //******************Code the Inverse Sensor Model Algorithm**********************//
+    // Defining Sensor Characteristics
+    double Zk, thetaK, sensorTheta;
+    double minDelta = -1;
+    double alpha = 200, beta = 20;
+
+    //******************TODO: Compute r and phi**********************//
+    double r = sqrt(pow((x-xi),2)+pow((y-yi),2));
+    double phi=atan2((yi-y),(xi-x))-theta;
+   
+
+    //Scaling Measurement to [-90 -37.5 -22.5 -7.5 7.5 22.5 37.5 90]
+    for (int i = 0; i < 8; i++) {
+        if (i == 0) {
+            sensorTheta = -90 * (M_PI / 180);
+        }
+        else if (i == 1) {
+            sensorTheta = -37.5 * (M_PI / 180);
+        }
+        else if (i == 6) {
+            sensorTheta = 37.5 * (M_PI / 180);
+        }
+        else if (i == 7) {
+            sensorTheta = 90 * (M_PI / 180);
+        }
+        else {
+            sensorTheta = (-37.5 + (i - 1) * 15) * (M_PI / 180);
+        }
+
+        if (fabs(phi - sensorTheta) < minDelta || minDelta == -1) {
+            Zk = sensorData[i];
+            thetaK = sensorTheta;
+            minDelta = fabs(phi - sensorTheta);
+        }
+    }
+
+    //******************TODO: Evaluate the three cases**********************//
+    // You also have to consider the cells with Zk > Zmax or Zk < Zmin as unkown states
+    
+    if (r>min(Zmax,Zk+alpha/2) || fabs(phi-thetaK)>beta/2 ||Zk>Zmax ||Zk<Zmin){
+        return l0;
+        }
+        else if (Zk<Zmax && fabs(r-Zk)<alpha/2){
+        return locc;
+        }else if(r<=Zk){
+        return lfree;
+        }
+        
+    
+    
+    
 }
 
 void occupancyGridMapping(double Robotx, double Roboty, double Robottheta, double sensorData[])
