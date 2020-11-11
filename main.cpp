@@ -18,7 +18,7 @@ vector< vector<double> > l(mapWidth/gridWidth, vector<double>(mapHeight/gridHeig
 
 double inverseSensorModel(double x, double y, double theta, double xi, double yi, double sensorData[])
 {
-        //******************Code the Inverse Sensor Model Algorithm**********************//
+    //******************Code the Inverse Sensor Model Algorithm**********************//
     // Defining Sensor Characteristics
     double Zk, thetaK, sensorTheta;
     double minDelta = -1;
@@ -57,53 +57,33 @@ double inverseSensorModel(double x, double y, double theta, double xi, double yi
     //******************TODO: Evaluate the three cases**********************//
     // You also have to consider the cells with Zk > Zmax or Zk < Zmin as unkown states
     
-    if (r>min(Zmax,Zk+alpha/2) || fabs(phi-thetaK)>beta/2 ||Zk>Zmax ||Zk<Zmin){
+    if (r>min(Zmax,Zk+alpha/2) || fabs(phi-thetaK)>beta/2||Zk>Zmax||Zk<Zmin){
         return l0;
-        }
-        else if (Zk<Zmax && fabs(r-Zk)<alpha/2){
-        return locc;
-        }else if(r<=Zk){
-        return lfree;
-        }
         
+    }else if (Zk<Zmax && fabs(r-Zk)<alpha/2){
+        return locc;
+        
+    }else if(r<=Zk){
+        return lfree;
+        
+    }
     
     
     
-}
+    
+} 
 
 void occupancyGridMapping(double Robotx, double Roboty, double Robottheta, double sensorData[])
 {
-    //1 - TODO: Generate a grid (size 300x150) and then loop through all the cells
-        vector<vector<double>> grid{300,vector<double>{150}};
-            //2- TODO: Compute the center of mass of each cell xi and yi 
-            for (int width_ind=0;width_ind <mapWidth/gridWidth;width_ind++){
-                for(int height_ind=0;height_ind<mapHeight/gridHeight;height_ind++){
-                    double xi = width_ind * gridWidth + gridWidth / 2 - robotXOffset;
-                    double yi = -(height_ind * gridHeight + gridHeight / 2) + robotYOffset;
-                    //3- TODO: Check if each cell falls under the perceptual field of the measurements
-                    double dist_from_robot = sqrt(pow((xi-Robotx),2)+pow((yi-Roboty),2));
-                    if (dist_from_robot<=Zmax ){ // condition to grid falls under feild of view
-                         l[width_ind][height_ind]=l[width_ind][height_ind]+inverseSensorModel(Robotx,Roboty,Robottheta,xi,yi,sensorData);
-                    }
-                    else {
-                        l[width_ind][width_ind]=l[width_ind][width_ind];
-
-                    }
-                
-
-                }
-                
-
+    for (int x = 0; x < mapWidth / gridWidth; x++) {
+        for (int y = 0; y < mapHeight / gridHeight; y++) {
+            double xi = x * gridWidth + gridWidth / 2 - robotXOffset;
+            double yi = -(y * gridHeight + gridHeight / 2) + robotYOffset;
+            if (sqrt(pow(xi - Robotx, 2) + pow(yi - Roboty, 2)) <= Zmax) {
+                l[x][y] = l[x][y] + inverseSensorModel(Robotx, Roboty, Robottheta, xi, yi, sensorData) - l0;
             }
-            
-            
-                 
-     
-    
-    
-    
-    
-    
+        }
+    }
 }
 
 int main()
@@ -133,4 +113,3 @@ int main()
     
     return 0;
 }
-
